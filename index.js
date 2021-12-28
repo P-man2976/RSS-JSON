@@ -25,7 +25,7 @@ app.get("/api/rss-json", async (req, res) => {
 
 			const rss = await fetch(requestUrl);
 			console.log(rss)
-			const rssData = rss.json();
+			const rssData = rss.toString();
 
 			const rssJson = await parser.parse(rssData);
 
