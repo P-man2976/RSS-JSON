@@ -4,7 +4,23 @@ const Parser = require("rss-parser");
 const http = require("http");
 
 const app = express();
-const parser = new Parser();
+const parser = new Parser({
+	customFields: {
+		feed: [
+			'title',
+			'link',
+		],
+		item: [
+			'isoDate',
+			'title',
+			'id',
+			'link',
+			'description',
+			'views',
+			'thumbnail',
+		]
+	}
+});
 const server = http.createServer(app);
 
 let counter = {
