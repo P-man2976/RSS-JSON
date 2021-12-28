@@ -3,8 +3,12 @@ const { XMLParser, XMLBuilder, XMLValidator} = require('fast-xml-parser');
 const fetch = require('cross-fetch');
 const http = require("http");
 
+const parseOptions = {
+	ignoreAttributes: false
+}
+
 const app = express();
-const parser = new XMLParser();
+const parser = new XMLParser(parseOptions);
 const server = http.createServer(app);
 
 let counter = {
