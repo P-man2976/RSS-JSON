@@ -208,7 +208,9 @@ app.get ('/api/rss-json', async (req, res) => {
 	}
 })
 
-server.listen(80, async () => {
+const port = 19300;
+
+server.listen(port, async () => {
 	
-	console.log("Server listening")
+	console.log(`Server listening on port ${port}`)
 })
