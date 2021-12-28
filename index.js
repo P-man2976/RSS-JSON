@@ -1,6 +1,4 @@
 const express = require("express");
-const { parse } = require("rss-to-json");
-const Parser = require("rss-parser");
 const { XMLParser, XMLBuilder, XMLValidator} = require('fast-xml-parser');
 const fetch = require('cross-fetch');
 const http = require("http");
@@ -15,20 +13,23 @@ let counter = {
 	error: 0,
 };
 
+// RSSからJSONへの変換URLへのリクエスト
 app.get("/api/rss-json", async (req, res) => {
 	console.log("Request received");
 	const start = new Date();
 	const requestUrl = req.query.req_url;
 
+	// XMLを取得するURLのパラメータがあるか
 	if (requestUrl) {
 		try {
 
+			// XML(RSS)を取得、JSONへパース
 			const rss = await fetch(requestUrl);
 			const rssData = await rss.text();
-			console.log(rssData)
 
 			const rssJson = await parser.parse(rssData);
 
+			// ステータス200でレスポンスを送信
 			res.status(200).send(rssJson);
 			const end = new Date();
 			console.log(`Request processed in ${end - start}ms`);
@@ -41,7 +42,9 @@ app.get("/api/rss-json", async (req, res) => {
 			throw error;
 		}
 	} else {
+		// XML(RSS)を取得するURLのパラメータが指定されていない場合
 		console.log("Request RSS URL undefined");
+		// ステータス400でレスポンスを送信
 		res.status(400).send("Request URL undefined");
 		const end = new Date();
 		console.log(`Request processed in ${end - start}ms`);
@@ -49,6 +52,7 @@ app.get("/api/rss-json", async (req, res) => {
 	}
 });
 
+// APIアクセスカウンターのリセットURLへのリクエスト
 app.delete("/api/reset", async (req, res) => {
 	try {
 		const query = req.query.scope;
@@ -68,12 +72,10 @@ app.delete("/api/reset", async (req, res) => {
 		if (queryScope.error === true) {
 			counter.error = 0;
 		}
-
-    res.status(200).send()
+		res.status(200).send()
 	} catch (error) {
 		console.error(error);
-
-    res.status(500).send()
+		res.status(500).send()
 	}
 });
 
