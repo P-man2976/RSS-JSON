@@ -1,8 +1,10 @@
 const express = require("express");
 const { parse } = require("rss-to-json");
+const Parser = require("rss-parser");
 const http = require("http");
 
 const app = express();
+const parser = new Parser();
 const server = http.createServer(app);
 
 let counter = {
@@ -18,7 +20,9 @@ app.get("/api/rss-json", async (req, res) => {
 
 	if (requestUrl) {
 		try {
-			const rss = await parse(requestUrl);
+			//const rss = await parse(requestUrl);
+
+			const rss = await parser.parseURL(requestUrl);
 
 			res.status(200).send(rss);
 			const end = new Date();
