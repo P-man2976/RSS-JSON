@@ -1,23 +1,18 @@
 const express = require("express");
-const { XMLParser, XMLBuilder, XMLValidator } = require("fast-xml-parser");
+const { XMLParser } = require("fast-xml-parser");
 const fetch = require("cross-fetch");
 const http = require("http");
-const https = require("https");
-const fs = require("fs");
+const dotenv = require("dotenv")
+dotenv.config();
 
 const parseOptions = {
 	ignoreAttributes: false,
 };
 
-const https_options = {
-	cert: fs.readFileSync("/etc/letsencrypt/live/pman2976.f5.si/fullchain.pem"),
-	key: fs.readFileSync("/etc/letsencrypt/live/pman2976.f5.si/privkey.pem"),
-};
-
 const app = express();
 const parser = new XMLParser(parseOptions);
 const server = http.createServer(app);
-const secure = https.createServer(app);
+const port = process.env.PORT || 80;
 
 let counter = {
 	success: 0,
@@ -54,7 +49,7 @@ app.get("/api/rss-json", async (req, res) => {
 		}
 	} else {
 		// XML(RSS)を取得するURLのパラメータが指定されていない場合
-		console.log("Request RSS URL undefined");
+		console.log("Request URL undefined");
 		// ステータス400でレスポンスを送信
 		res.status(400).send("Request URL undefined");
 		const end = new Date();
@@ -95,13 +90,6 @@ app.delete("/api/reset", async (req, res) => {
 	}
 });
 
-const port = 19310;
-const httpsPort = 19311;
-
 server.listen(port, async () => {
 	console.log(`Server listening on port ${port}`);
-});
-
-secure.listen(httpsPort, async () => {
-	console.log(`HTTPS server listening on port ${httpsPort}`);
 });
