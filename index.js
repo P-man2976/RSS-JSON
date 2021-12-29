@@ -8,6 +8,7 @@ dotenv.config();
 
 const parseOptions = {
 	ignoreAttributes: false,
+	preserveOrder: true
 };
 
 const app = express();
