@@ -1,13 +1,13 @@
 const express = require("express");
-const { XMLParser, XMLBuilder, XMLValidator} = require('fast-xml-parser');
-const fetch = require('cross-fetch');
+const { XMLParser, XMLBuilder, XMLValidator } = require("fast-xml-parser");
+const fetch = require("cross-fetch");
 const http = require("http");
 const https = require("https");
-const fs = require("fs")
+const fs = require("fs");
 
 const parseOptions = {
-	ignoreAttributes: false
-}
+	ignoreAttributes: false,
+};
 
 const https_options = {
 	cert: fs.readFileSync("/etc/letsencrypt/live/pman2976.f5.si/fullchain.pem"),
@@ -34,9 +34,8 @@ app.get("/api/rss-json", async (req, res) => {
 	// XMLを取得するURLのパラメータがあるか
 	if (requestUrl) {
 		try {
-
 			// XML(RSS)を取得、JSONへパース
-				const rss = await fetch(requestUrl);
+			const rss = await fetch(requestUrl);
 			const rssData = await rss.text();
 
 			const rssJson = await parser.parse(rssData);
@@ -46,7 +45,7 @@ app.get("/api/rss-json", async (req, res) => {
 			const end = new Date();
 			console.log(`Request processed in ${end - start}ms`);
 			counter.success++;
-			console.log(`Access count : ${counter.success}`)
+			console.log(`Access count : ${counter.success}`);
 		} catch (error) {
 			console.error(error);
 			res.status(500).send();
@@ -67,28 +66,32 @@ app.get("/api/rss-json", async (req, res) => {
 // APIアクセスカウンターのリセットURLへのリクエスト
 app.delete("/api/reset", async (req, res) => {
 	try {
-		const query = req.query.scope;
-		console.log(query);
+		if (req.query.scope) {
+			const queryScope = {
+				success: req.query.scope.indexOf("success"),
+				fail: req.query.scope.indexOf("fail"),
+				error: req.query.scope.indexOf("error"),
+			};
 
-		const queryScope = {
-			success: query.includes("success"),
-			fail: query.includes("fail"),
-			error: query.includes("error"),
-		};
-
-		if (queryScope.success === true) {
-			counter.success = 0;
+			if (queryScope.success !== -1) {
+				counter.success = 0;
+				console.log("Reset success counter");
+			}
+			if (queryScope.fail !== -1) {
+				counter.fail = 0;
+				console.log("Reset fail counter");
+			}
+			if (queryScope.error !== -1) {
+				counter.error = 0;
+				console.log("Reset error counter");
+			}
+			res.status(200).send();
+		} else {
+			res.status(400).send("Reset scope undefined");
 		}
-		if (queryScope.fail === true) {
-			counter.fail = 0;
-		}
-		if (queryScope.error === true) {
-			counter.error = 0;
-		}
-		res.status(200).send()
 	} catch (error) {
 		console.error(error);
-		res.status(500).send()
+		res.status(500).send();
 	}
 });
 
@@ -100,5 +103,5 @@ server.listen(port, async () => {
 });
 
 secure.listen(httpsPort, async () => {
-	console.log(`HTTPS server listening on port ${httpsPort}`)
-})
+	console.log(`HTTPS server listening on port ${httpsPort}`);
+});
