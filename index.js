@@ -2,7 +2,7 @@ const express = require("express");
 const { XMLParser } = require("fast-xml-parser");
 const fetch = require("cross-fetch");
 const http = require("http");
-const dotenv = require("dotenv")
+const dotenv = require("dotenv");
 dotenv.config();
 
 const parseOptions = {
