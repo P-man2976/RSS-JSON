@@ -2,14 +2,21 @@ const express = require("express");
 const { XMLParser, XMLBuilder, XMLValidator} = require('fast-xml-parser');
 const fetch = require('cross-fetch');
 const http = require("http");
+const https = require("https");
 
 const parseOptions = {
 	ignoreAttributes: false
 }
 
+const https_options = {
+	cert: fs.readFileSync("/etc/letsencrypt/live/pman2976.f5.si/fullchain.pem"),
+	key: fs.readFileSync("/etc/letsencrypt/live/pman2976.f5.si/privkey.pem"),
+};
+
 const app = express();
 const parser = new XMLParser(parseOptions);
 const server = http.createServer(app);
+const secure = https.createServer(app);
 
 let counter = {
 	success: 0,
@@ -18,7 +25,7 @@ let counter = {
 };
 
 // RSSからJSONへの変換URLへのリクエスト
-app.get("/api/rss-json", async (req, res) => {
+secure.get("/api/rss-json", async (req, res) => {
 	console.log("Request received");
 	const start = new Date();
 	const requestUrl = req.query.req_url;
@@ -28,7 +35,7 @@ app.get("/api/rss-json", async (req, res) => {
 		try {
 
 			// XML(RSS)を取得、JSONへパース
-			const rss = await fetch(requestUrl);
+				const rss = await fetch(requestUrl);
 			const rssData = await rss.text();
 
 			const rssJson = await parser.parse(rssData);
@@ -57,7 +64,7 @@ app.get("/api/rss-json", async (req, res) => {
 });
 
 // APIアクセスカウンターのリセットURLへのリクエスト
-app.delete("/api/reset", async (req, res) => {
+secure.delete("/api/reset", async (req, res) => {
 	try {
 		const query = req.query.scope;
 
@@ -83,8 +90,17 @@ app.delete("/api/reset", async (req, res) => {
 	}
 });
 
+server.get('/api/rss-json', async (req, res) => {
+	res.redirect('https://pman2976.f5.si:19311/api/rss-json');
+})
+
 const port = 19310;
+const httpsPort = 19311;
 
 server.listen(port, async () => {
 	console.log(`Server listening on port ${port}`);
 });
+
+secure.listen(httpsPort, async () => {
+	console.log(`HTTPS server listening on port ${httpsPort}`)
+})
