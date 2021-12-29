@@ -3,6 +3,7 @@ const { XMLParser, XMLBuilder, XMLValidator} = require('fast-xml-parser');
 const fetch = require('cross-fetch');
 const http = require("http");
 const https = require("https");
+const fs = require("fs")
 
 const parseOptions = {
 	ignoreAttributes: false
