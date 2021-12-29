@@ -10,7 +10,7 @@ const parseOptions = {
 const app = express();
 const parser = new XMLParser(parseOptions);
 const server = http.createServer(app);
-const port = process.env.PORT || 80;
+const port = process.env.PORT;
 
 let counter = {
 	success: 0,
