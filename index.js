@@ -68,6 +68,7 @@ app.get("/api/rss-json", async (req, res) => {
 app.delete("/api/reset", async (req, res) => {
 	try {
 		const query = req.query.scope;
+		console.log(query);
 
 		const queryScope = {
 			success: query.includes("success"),
