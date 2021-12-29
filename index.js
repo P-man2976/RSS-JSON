@@ -26,7 +26,7 @@ let counter = {
 };
 
 // RSSからJSONへの変換URLへのリクエスト
-secure.get("/api/rss-json", async (req, res) => {
+app.get("/api/rss-json", async (req, res) => {
 	console.log("Request received");
 	const start = new Date();
 	const requestUrl = req.query.req_url;
@@ -65,7 +65,7 @@ secure.get("/api/rss-json", async (req, res) => {
 });
 
 // APIアクセスカウンターのリセットURLへのリクエスト
-secure.delete("/api/reset", async (req, res) => {
+app.delete("/api/reset", async (req, res) => {
 	try {
 		const query = req.query.scope;
 
@@ -90,10 +90,6 @@ secure.delete("/api/reset", async (req, res) => {
 		res.status(500).send()
 	}
 });
-
-server.get('/api/rss-json', async (req, res) => {
-	res.redirect('https://pman2976.f5.si:19311/api/rss-json');
-})
 
 const port = 19310;
 const httpsPort = 19311;
