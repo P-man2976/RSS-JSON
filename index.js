@@ -8,7 +8,6 @@ dotenv.config();
 
 const parseOptions = {
 	ignoreAttributes: false,
-	alwaysCreateTextNode: true,
 };
 
 const app = express();
