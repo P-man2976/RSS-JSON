@@ -21,23 +21,60 @@ let counter = {
 	error: 0,
 };
 
+// 仮キャッシュ
+// 10分間データを保持、10分経ったデータは再読み込み
+let requestCache = [];
+
 // RSSからJSONへの変換URLへのリクエスト
 app.get("/api/rss-json", async (req, res) => {
 	console.log(`[${makeISOTimeString()}] Request received`);
 	const start = new Date();
 	const requestUrl = req.query.req_url;
 
+	// XMLを取得する
+	async function fetchXml(requestUrl) {
+		const rss = await fetch(requestUrl);
+		const rssData = await rss.text();
+		return await parser.parse(rssData);
+	}
+
 	// XMLを取得するURLのパラメータがあるか
 	if (requestUrl) {
 		try {
-			// XML(RSS)を取得、JSONへパース
-			const rss = await fetch(requestUrl);
-			const rssData = await rss.text();
+			// キャッシュ検索
+			const cacheIndex = requestCache.findIndex((item) => {
+				item.requestUrl === requestUrl;
+			});
 
-			const rssJson = await parser.parse(rssData);
+			// キャッシュが存在した場合
+			if (cacheIndex !== -1) {
 
-			// ステータス200でレスポンスを送信
-			res.status(200).send(rssJson);
+				// キャッシュの有効期限が切れていた場合
+				if ((start - requestCache[cacheIndex].requestTime) > 600000 ) {
+					
+					const rssJson = await fetchXml(requestUrl);
+					requestCache[cacheIndex].requestTime = start;
+					requestCache[cacheIndex].data = rssJson;
+
+					res.status(200).send(rssJson);
+					console.log(`cache refreshed`)
+				} else {
+					res.status(200).send(requestCache[cacheIndex].data);
+					console.log(`response cache`)
+				}
+				
+			} else {
+				// キャッシュが存在しない場合
+				const rssJson = await fetchXml(requestUrl);
+				requestCache.push({
+					requestUrl: requestUrl,
+					requestTime: start,
+					data: rssJson
+				});
+				res.status(200).send(rssJson);
+				console.log(`data fetched`)
+			}
+
 			const end = new Date();
 			console.log(`[${makeISOTimeString()}] Request processed in ${end - start}ms`);
 			counter.success++;
