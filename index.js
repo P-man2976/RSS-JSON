@@ -75,6 +75,7 @@ app.get("/api/rss-json", async (req, res) => {
 				console.log(`data fetched`)
 			}
 
+			console.log(requestCache);
 			const end = new Date();
 			console.log(`[${makeISOTimeString()}] Request processed in ${end - start}ms`);
 			counter.success++;
