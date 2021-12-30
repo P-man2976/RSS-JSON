@@ -46,6 +46,8 @@ app.get("/api/rss-json", async (req, res) => {
 				item.requestUrl === requestUrl;
 			});
 
+			console.log(cacheIndex);
+
 			// キャッシュが存在した場合
 			if (cacheIndex !== -1) {
 
