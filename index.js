@@ -42,10 +42,7 @@ app.get("/api/rss-json", async (req, res) => {
 	if (requestUrl) {
 		try {
 			// キャッシュ検索
-			const cacheIndex = await requestCache.findIndex((item) => {
-				console.log(item)
-				item.requestUrl == requestUrl;
-			});
+			const cacheIndex = await requestCache.findIndex((item) => item.requestUrl === requestUrl );
 
 			// キャッシュが存在した場合
 			if (cacheIndex !== -1) {
