@@ -43,10 +43,9 @@ app.get("/api/rss-json", async (req, res) => {
 		try {
 			// キャッシュ検索
 			const cacheIndex = await requestCache.findIndex((item) => {
+				console.log(item)
 				item.requestUrl === requestUrl;
 			});
-
-			console.log(cacheIndex);
 
 			// キャッシュが存在した場合
 			if (cacheIndex !== -1) {
@@ -76,8 +75,7 @@ app.get("/api/rss-json", async (req, res) => {
 				res.status(200).send(rssJson);
 				console.log(`data fetched`)
 			}
-
-			console.log(requestCache);
+			
 			const end = new Date();
 			console.log(`[${makeISOTimeString()}] Request processed in ${end - start}ms`);
 			counter.success++;
