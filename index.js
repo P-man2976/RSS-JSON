@@ -25,13 +25,25 @@ let counter = {
 // 10分間データを保持、10分経ったデータは再読み込み
 let requestCache = [];
 
+// 不要なキャッシュを削除する処理
+// setInterval関数により10分ごと実行
+// 30分以上リフレッシュされなかったキャッシュは配列から削除
+setInterval(() => {
+	requestCache.forEach( async (element, index) => {
+		if (element.requestTime - new Date() > 1800000) {
+			requestCache.splice(index, 1);
+			console.log(`[${makeISOTimeString()}] Cache deleted`)
+		}
+	});
+}, 600000);
+
 // RSSからJSONへの変換URLへのリクエスト
 app.get("/api/rss-json", async (req, res) => {
 	console.log(`[${makeISOTimeString()}] Request received`);
 	const start = new Date();
 	const requestUrl = req.query.req_url;
 
-	// XMLを取得する
+	// XMLを取得する関数
 	async function fetchXml(requestUrl) {
 		const rss = await fetch(requestUrl);
 		const rssData = await rss.text();
@@ -55,10 +67,10 @@ app.get("/api/rss-json", async (req, res) => {
 					requestCache[cacheIndex].data = rssJson;
 
 					res.status(200).send(rssJson);
-					console.log(`cache refreshed`)
+					console.log(`[${makeISOTimeString()}] Cache refreshed`)
 				} else {
 					res.status(200).send(requestCache[cacheIndex].data);
-					console.log(`response cache`)
+					console.log(`[${makeISOTimeString()}] Responsed cache`)
 				}
 				
 			} else {
@@ -70,7 +82,7 @@ app.get("/api/rss-json", async (req, res) => {
 					data: rssJson
 				});
 				res.status(200).send(rssJson);
-				console.log(`data fetched`)
+				console.log(`[${makeISOTimeString()}] Data fetched and saved to cache`)
 			}
 
 			const end = new Date();
@@ -130,6 +142,7 @@ server.listen(port, async () => {
 	console.log(`[${makeISOTimeString()}] Server listening on port ${port}`);
 });
 
+// 時間文字列を生成する関数
 const makeISOTimeString = () => {
 	return moment().tz("Asia/Tokyo").format();
 };
