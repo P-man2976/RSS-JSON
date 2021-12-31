@@ -16,19 +16,32 @@ node index.js
 GET /api/rss-json?req_url=[RSS Feed URL]
 ```
 
-### カウンターリセット
+### リセット（カウンター / キャッシュ）
 
 ```
-DELETE /api/reset?scope=[success/fail/error(カンマ区切りで複数指定)]
+DELETE /api/reset?scope=[success/fail/error/cache(カンマ区切りで複数指定)]
 ```
 
 ## 仕様
 
 ### キャッシュ
 
+#### キャッシュの取得
+
 RSS→JSON変換時、取得したRSS(XML)を10分間キャッシュ  
 初めてアクセスするURL、前回取得してから10分を過ぎたURLはRSS(XML)リクエストを送信  
 前回取得してから10分以内にリクエストされたURLはキャッシュを返却  
+
+#### キャッシュの削除
+
+setInterval関数によって10分ごとにキャッシュを巡回
+前回取得から30分以上経過しているキャッシュは削除
+
+### カウンター
+
+- リクエストに対し正常にjsonを返却できた場合は`counter.success`の値に1加算
+- リクエストが不正（パラメータ未指定など）の場合は`counter.fail`の値に1加算
+- サーバの処理で問題が発生した場合は`counter.error`の値に1加算
 
 ## 使用ライブラリ
 
