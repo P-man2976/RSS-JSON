@@ -114,6 +114,7 @@ app.delete("/api/reset", async (req, res) => {
 				success: req.query.scope.indexOf("success"),
 				fail: req.query.scope.indexOf("fail"),
 				error: req.query.scope.indexOf("error"),
+				cache: req.query.scope.indexOf("cache")
 			};
 
 			if (queryScope.success !== -1) {
@@ -127,6 +128,10 @@ app.delete("/api/reset", async (req, res) => {
 			if (queryScope.error !== -1) {
 				counter.error = 0;
 				console.log(`[${makeISOTimeString()}] Reset error counter`);
+			}
+			if (queryScope.cache !== -1) {
+				requestCache = [];
+				console.log(`[${makeISOTimeString()}] All cache deleted`);
 			}
 			res.status(200).send();
 		} else {
