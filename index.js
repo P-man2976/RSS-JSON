@@ -92,7 +92,7 @@ app.get("/api/rss-json", async (req, res) => {
 		} catch (error) {
 			console.error(error);
 			res.status(500).send();
-			counter.fail++;
+			counter.error++;
 			throw error;
 		}
 	} else {
@@ -102,7 +102,7 @@ app.get("/api/rss-json", async (req, res) => {
 		res.status(400).send("Request URL undefined");
 		const end = new Date();
 		console.log(`[${makeISOTimeString()}] Request processed in ${end - start}ms`);
-		counter.error++;
+		counter.fail++;
 	}
 });
 
